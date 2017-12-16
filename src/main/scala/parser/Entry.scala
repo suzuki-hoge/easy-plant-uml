@@ -1,21 +1,57 @@
 package parser
 
-trait Entry
+import scala.collection.mutable
 
-sealed trait EntryType
+trait Entry {
+  protected type MList[A] = mutable.MutableList[A]
 
-case object Package extends EntryType
+  def show: MList[String] = showRec(0, mutable.MutableList())
 
-case object Namespace extends EntryType
+  def showRec(depth: Int, acc: MList[String]): MList[String]
 
-case object Object extends EntryType
+  protected def indented(depth: Int, s: String): String = "  " * depth + s
+}
 
-case object Class extends EntryType
+sealed trait ContainableType
 
-case object Enum extends EntryType
+case object Package extends ContainableType
 
-case class Containable(s: String, et: EntryType, subs: List[Entry]) extends Entry
+case object Namespace extends ContainableType
 
-case class Element(s: String, et: EntryType) extends Entry
+sealed trait ElementType
 
-case class Raw(s: String) extends Entry
+case object Object extends ElementType
+
+case object Class extends ElementType
+
+case object Enum extends ElementType
+
+case class Containable(s: String, t: ContainableType, subs: List[Entry]) extends Entry {
+  override def showRec(depth: Int, acc: MList[String]): MList[String] = {
+    acc += indented(depth, t match {
+      case Package => "package " + s + " {"
+      case Namespace => "namespace " + s + " {"
+    })
+    subs.foreach(_.showRec(depth + 1, acc))
+    acc += indented(depth, "}")
+    acc
+  }
+}
+
+case class Element(s: String, t: ElementType) extends Entry {
+  override def showRec(depth: Int, acc: MList[String]): MList[String] = {
+    acc += indented(depth, t match {
+      case Object => "object " + s
+      case Class => "class " + s
+      case Enum => "enum " + s
+    })
+    acc
+  }
+}
+
+case class Raw(s: String) extends Entry {
+  override def showRec(depth: Int, acc: MList[String]): MList[String] = {
+    acc += indented(depth, s)
+    acc
+  }
+}
