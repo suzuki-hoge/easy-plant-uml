@@ -18,3 +18,4 @@ case class Containable(s: String, et: EntryType, subs: List[Entry]) extends Entr
 
 case class Element(s: String, et: EntryType) extends Entry
 
+case class Raw(s: String) extends Entry
