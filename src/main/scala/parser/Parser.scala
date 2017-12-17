@@ -15,16 +15,20 @@ object Parser extends JavaTokenParsers {
 
   private def entry(indent: String): Parser[Entry] = element(indent) | containable(indent) | raw(indent)
 
-  private def containable(indent: String): Parser[Containable] = indent ~> (".p" | ".n") ~ space ~ identifier ~ eol ~ rep(entry(deeper(indent))) ^^ {
-    case ".p" ~ _ ~ s ~ _ ~ subs => Containable(s, Package, subs)
-    case ".n" ~ _ ~ s ~ _ ~ subs => Containable(s, Namespace, subs)
-  }
+  private def containable(indent: String): Parser[Containable] =
+    indent ~> (".p" | ".n") ~ space ~ identifier ~ eol ~ rep(entry(deeper(indent))) ^^ {
+      case ".p" ~ _ ~ id ~ _ ~ subs => Containable(id, Package, subs)
+      case ".n" ~ _ ~ id ~ _ ~ subs => Containable(id, Namespace, subs)
+    }
 
-  private def element(indent: String): Parser[Element] = indent ~> (".o" | ".c" | ".e") ~ space ~ identifier <~ eol ^^ {
-    case ".o" ~ _ ~ s => Element(s, Object)
-    case ".c" ~ _ ~ s => Element(s, Class)
-    case ".e" ~ _ ~ s => Element(s, Enum)
-  }
+  private def element(indent: String): Parser[Element] =
+    indent ~> (".o" | ".c" | ".e") ~ space ~ identifier ~ eol ~ rep(attributes(deeper(indent))) ^^ {
+      case ".o" ~ _ ~ id ~ _ ~ attrs => Element(id, Object, attrs)
+      case ".c" ~ _ ~ id ~ _ ~ attrs => Element(id, Class, attrs)
+      case ".e" ~ _ ~ id ~ _ ~ attrs => Element(id, Enum, attrs)
+    }
+
+  private def attributes(indent: String): Parser[String] = indent ~> "^[^.].*".r <~ eol
 
   private def raw(indent: String): Parser[Raw] = indent ~> ".*".r <~ eol ^^ Raw
 

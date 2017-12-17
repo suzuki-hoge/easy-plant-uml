@@ -7,7 +7,10 @@ import scala.collection.mutable
 class EntryTest extends FunSuite {
   test("entry") {
     assert(
-      Element("Foo", Class).show == mutable.MutableList("class Foo")
+      Element("Foo", Class, List()).show == mutable.MutableList("class Foo")
+    )
+    assert(
+      Element("Foo", Class, List("- String value", "+ {static} Foo create()")).show == mutable.MutableList("class Foo {", "  - String value", "  + {static} Foo create()", "}")
     )
     assert(
       Containable("foo", Package, List()).show == mutable.MutableList("package foo {", "}")
@@ -22,13 +25,13 @@ class EntryTest extends FunSuite {
       Containable("foo", Namespace, List(
         Containable("bar", Namespace, List(
           Raw("' comment"),
-          Element("Type", Enum)
+          Element("Type", Enum, List())
         )),
-        Element("Foo", Class),
+        Element("Foo", Class, List("- String value", "+ {static} Foo create()")),
         Raw("Foo -> Type")
       )),
       Containable("pon", Namespace, List()),
-      Element("Table", Object)
+      Element("Table", Object, List())
     )
 
     assert(
@@ -38,7 +41,10 @@ class EntryTest extends FunSuite {
         "    ' comment",
         "    enum Type",
         "  }",
-        "  class Foo",
+        "  class Foo {",
+        "    - String value",
+        "    + {static} Foo create()",
+        "  }",
         "  Foo -> Type",
         "}",
         "namespace pon {",

@@ -26,11 +26,11 @@ case object Class extends ElementType
 
 case object Enum extends ElementType
 
-case class Containable(s: String, t: ContainableType, subs: List[Entry]) extends Entry {
+case class Containable(id: String, t: ContainableType, subs: List[Entry]) extends Entry {
   override def showRec(depth: Int, acc: MList[String]): MList[String] = {
     acc += indented(depth, t match {
-      case Package => "package " + s + " {"
-      case Namespace => "namespace " + s + " {"
+      case Package => "package " + id + " {"
+      case Namespace => "namespace " + id + " {"
     })
     subs.foreach(_.showRec(depth + 1, acc))
     acc += indented(depth, "}")
@@ -38,20 +38,32 @@ case class Containable(s: String, t: ContainableType, subs: List[Entry]) extends
   }
 }
 
-case class Element(s: String, t: ElementType) extends Entry {
+case class Element(id: String, t: ElementType, attrs: List[String]) extends Entry {
   override def showRec(depth: Int, acc: MList[String]): MList[String] = {
-    acc += indented(depth, t match {
-      case Object => "object " + s
-      case Class => "class " + s
-      case Enum => "enum " + s
-    })
+    def t = this.t match {
+      case Object => "object "
+      case Class => "class "
+      case Enum => "enum "
+    }
+    if (attrs.isEmpty) noAttrs(depth, t, acc) else withAttrs(depth, t, acc)
+  }
+
+  private def noAttrs(depth: Int, t: String, acc: MList[String]): MList[String] = {
+    acc += indented(depth, t + id)
+    acc
+  }
+
+  private def withAttrs(depth: Int, t: String, acc: MList[String]): MList[String] = {
+    acc += indented(depth, t + id + " {")
+    attrs.foreach(acc += indented(depth + 1, _))
+    acc += indented(depth, "}")
     acc
   }
 }
 
-case class Raw(s: String) extends Entry {
+case class Raw(id: String) extends Entry {
   override def showRec(depth: Int, acc: MList[String]): MList[String] = {
-    acc += indented(depth, s)
+    acc += indented(depth, id)
     acc
   }
 }
