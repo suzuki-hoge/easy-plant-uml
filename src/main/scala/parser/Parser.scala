@@ -13,7 +13,7 @@ object Parser extends JavaTokenParsers {
 
   private def identifier: Parser[String] = "[a-zA-Z0-9_]+".r
 
-  private def entry(indent: String): Parser[Entry] = element(indent) | containable(indent) | raw(indent)
+  private def entry(indent: String): Parser[Entry] = blank(indent) | containable(indent) | element(indent) | raw(indent)
 
   private def containable(indent: String): Parser[Containable] =
     indent ~> (".p" | ".n") ~ space ~ identifier ~ eol ~ rep(entry(deeper(indent))) ^^ {
@@ -28,9 +28,11 @@ object Parser extends JavaTokenParsers {
       case ".e" ~ _ ~ id ~ _ ~ attrs => Element(id, Enum, attrs)
     }
 
-  private def attributes(indent: String): Parser[String] = indent ~> "^[^.].*".r <~ eol
+  private def attributes(indent: String): Parser[String] = (indent ~> "^[^.].*".r <~ eol) | (indent ~> "." <~ eol ^^ (it => ""))
 
   private def raw(indent: String): Parser[Raw] = indent ~> ".*".r <~ eol ^^ Raw
 
-  def entries(lines: String): List[Entry] = parseAll(rep(entry("")), lines + "\n").get
+  private def blank(indent: String): Parser[Blank] = indent ~> "." <~ eol ^^ (_ => Blank())
+
+  def entries(lines: String): List[Entry] = parseAll(rep(entry("")), lines).get
 }

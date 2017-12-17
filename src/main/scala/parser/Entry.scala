@@ -55,7 +55,10 @@ case class Element(id: String, t: ElementType, attrs: List[String]) extends Entr
 
   private def withAttrs(depth: Int, t: String, acc: MList[String]): MList[String] = {
     acc += indented(depth, t + id + " {")
-    attrs.foreach(acc += indented(depth + 1, _))
+    attrs.foreach {
+      case s if s.trim.isEmpty => acc += ""
+      case s => acc += indented(depth + 1, s)
+    }
     acc += indented(depth, "}")
     acc
   }
@@ -64,6 +67,13 @@ case class Element(id: String, t: ElementType, attrs: List[String]) extends Entr
 case class Raw(id: String) extends Entry {
   override def showRec(depth: Int, acc: MList[String]): MList[String] = {
     acc += indented(depth, id)
+    acc
+  }
+}
+
+case class Blank() extends Entry {
+  override def showRec(depth: Int, acc: MList[String]): MList[String] = {
+    acc += ""
     acc
   }
 }

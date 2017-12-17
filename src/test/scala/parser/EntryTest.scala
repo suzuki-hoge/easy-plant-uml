@@ -18,6 +18,9 @@ class EntryTest extends FunSuite {
     assert(
       Raw("' comment").show == mutable.MutableList("' comment")
     )
+    assert(
+      Blank().show == mutable.MutableList("")
+    )
   }
 
   test("entries") {
@@ -27,10 +30,14 @@ class EntryTest extends FunSuite {
           Raw("' comment"),
           Element("Type", Enum, List())
         )),
-        Element("Foo", Class, List("- String value", "+ {static} Foo create()")),
+        Blank(),
+        Element("Foo", Class, List("- String value", "", "+ {static} Foo create()")),
+        Blank(),
         Raw("Foo -> Type")
       )),
+      Blank(),
       Containable("pon", Namespace, List()),
+      Blank(),
       Element("Table", Object, List())
     )
 
@@ -41,14 +48,19 @@ class EntryTest extends FunSuite {
         "    ' comment",
         "    enum Type",
         "  }",
+        "",
         "  class Foo {",
         "    - String value",
+        "",
         "    + {static} Foo create()",
         "  }",
+        "",
         "  Foo -> Type",
         "}",
+        "",
         "namespace pon {",
         "}",
+        "",
         "object Table"
       )
     )
