@@ -4,36 +4,48 @@ import org.scalatest.FunSuite
 
 class ConverterTest extends FunSuite {
   test("blankToDot") {
+    val in =
+      """.p foo
+        |  . p bar
+        |
+        |  foo -> bar
+        |
+        |
+        |.p pon""".stripMargin
+
+    val exp =
+      """.p foo
+        |  . p bar
+        |  .
+        |  foo -> bar
+        |.
+        |.
+        |.p pon""".stripMargin
+
     assert(
-      Converter.blankToDot(
-        """.p foo
-          |  . p bar
-          |
-          |  foo -> bar
-          |
-          |
-          |.p pon""".stripMargin) ==
-        """.p foo
-          |  . p bar
-          |  .
-          |  foo -> bar
-          |.
-          |.
-          |.p pon""".stripMargin
+      Converter.blankToDot(in) == exp
     )
   }
 
   test("toString") {
-    assert(
-      Converter.toString(
-        List(".p foo")
-      ) == ".p foo\n"
+    val patterns = List(
+      (
+        List(".p foo"),
+
+        """.p foo
+          |""".stripMargin
+      ),
+      (
+        List(".p foo", ".p bar"),
+
+        """.p foo
+          |.p bar
+          |""".stripMargin
+      )
     )
 
-    assert(
-      Converter.toString(
-        List(".p foo", ".p bar")
-      ) == ".p foo\n.p bar\n"
-    )
+    patterns.foreach {
+      case (in, exp) => assert(Converter.toString(in) == exp)
+    }
   }
 }
