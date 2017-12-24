@@ -1,0 +1,52 @@
+@startuml
+
+interface BaseParser {
+  # P[String] identifer
+  # P[String] space
+  # P[String] eol
+}
+
+interface BlankParser {
+  # P[Blank] blank
+}
+
+interface EntryParser {
+  # P[Entry] entry
+  - P[Containable] containable
+  - P[ContainableType] ct
+}
+
+interface ElementParser {
+  # P[Element] element
+  - P[ElementType] et
+  - P[Attribute] attribute
+  - P[Declaration] declaration
+  - P[Modifier] mod
+}
+
+interface RawParser {
+  # P[Raw] raw
+}
+
+class Indent {
+  - Int value
+  + String s
+  + Indent {static} zero()
+  + Indent deeper()
+}
+
+class EntriesParser {
+  + List[Entry] parse(String)
+  - P[List[Entry]] entries
+}
+
+BlankParser -up-|> BaseParser
+RawParser -up-|> BaseParser
+ElementParser -right-|> BlankParser
+EntryParser -up-|> BlankParser
+EntryParser -up-|> RawParser
+EntryParser -up-|> ElementParser
+EntriesParser -up-|> EntryParser
+BaseParser -[hidden]left-> Indent
+
+@enduml
