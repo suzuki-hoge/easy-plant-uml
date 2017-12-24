@@ -1,0 +1,86 @@
+@startuml
+
+class Entries {
+  [Entry] values
+  String show()
+}
+
+class Depth {
+  - Int value
+  + Depth {static} zero()
+  + String indent(String)
+  + Depth deeper()
+}
+
+interface Entry {
+  String show(Depth)
+}
+
+class Raw {
+  - String value
+  String show(Depth)
+}
+
+class Blank {
+  String show(Depth)
+}
+
+class Containable {
+  - String id
+  - ContainableType ct
+  - [Entry] subs
+  String show(Depth)
+}
+
+enum ContainableType {
+  Package, Namespace
+  String toString()
+}
+
+class Element {
+  - String id
+  - ElementType et
+  - [Attribute] attrs
+  String show(Depth)
+}
+
+enum ElementType {
+  Class, Enum, Interface
+  String toString()
+}
+
+interface Attribute {
+  String show(Depth)
+}
+
+class Declaration {
+  - [Modifier] mods
+  - String value
+  String show(Depth)
+}
+
+enum Modifier {
+  Public, Protected, Private, Static
+  String toString()
+}
+
+Entries -down-> "*" Entry
+Entry -right-> Depth
+
+Raw -up-|> Entry
+Blank -up-|> Entry
+Containable -up-|> Entry
+Element -up-|> Entry
+Containable --> "*" Entry
+
+Containable -down-> ContainableType
+
+Element --> ElementType
+Element -down-> "*" Attribute
+
+Declaration -up-|> Attribute
+Declaration -down-> "*" Modifier
+
+Blank -up-|> Attribute
+
+@enduml
