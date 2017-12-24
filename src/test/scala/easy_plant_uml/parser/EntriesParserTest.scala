@@ -6,7 +6,7 @@ import easy_plant_uml.entry.{Blank, Raw}
 import org.scalatest.FunSuite
 
 class EntriesParserTest extends FunSuite {
-  test("test") {
+  test("success") {
     def in =
       """.p foo
         |  .p bar
@@ -48,7 +48,13 @@ class EntriesParserTest extends FunSuite {
     )
 
     assert(
-      EntriesParser.parse(in) == exp
+      EntriesParser.parse(in) == Right(exp)
+    )
+  }
+
+  test("failure") {
+    assert(
+      EntriesParser.parse(".p foo") == Left("parse failure on (line: 1, column: 7)")
     )
   }
 }
