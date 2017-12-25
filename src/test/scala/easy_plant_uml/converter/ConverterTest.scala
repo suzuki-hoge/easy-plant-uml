@@ -4,23 +4,25 @@ import org.scalatest.FunSuite
 
 class ConverterTest extends FunSuite {
   test("blankToDot") {
-    val in =
-      """.p foo
-        |  . p bar
-        |
-        |  foo -> bar
-        |
-        |
-        |.p pon""".stripMargin
+    val in = List(
+      ".p foo",
+      "  . p bar",
+      "",
+      "  foo -> bar",
+      "",
+      "",
+      ".p pon"
+    )
 
-    val exp =
-      """.p foo
-        |  . p bar
-        |  .
-        |  foo -> bar
-        |.
-        |.
-        |.p pon""".stripMargin
+    val exp = List(
+      ".p foo",
+      "  . p bar",
+      "  .",
+      "  foo -> bar",
+      ".",
+      ".",
+      ".p pon"
+    )
 
     assert(
       Converter.blankToDot(in) == exp

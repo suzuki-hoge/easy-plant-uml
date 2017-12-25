@@ -1,0 +1,5 @@
+@startuml
+
+note "src/test/resources/nonexistent.epuml is not exists." as Note
+
+@enduml

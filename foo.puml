@@ -1,0 +1,5 @@
+@startuml
+
+' foo.epuml is not exists.
+
+@enduml

@@ -1,0 +1,27 @@
+@startuml
+
+package foo {
+  package bar {
+    ' comment
+    enum Type {
+      On, Off
+    }
+  }
+
+  class Foo {
+    - String value
+
+    + {static} Foo create()
+  }
+
+  Foo -> Type
+}
+
+interface Base
+
+Foo -up-|> Base
+
+namespace pon {
+}
+
+@enduml

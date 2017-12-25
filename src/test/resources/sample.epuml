@@ -1,0 +1,18 @@
+.p foo
+  .p bar
+    ' comment
+    .e Type
+      On, Off
+
+  .c Foo
+    - String value
+
+    +s Foo create()
+
+  Foo -> Type
+
+.i Base
+
+Foo -up-|> Base
+
+.n pon
